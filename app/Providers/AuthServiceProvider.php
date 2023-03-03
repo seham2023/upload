@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -21,6 +22,24 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+
+        Gate::define('has-permission', function ($user, $capability = null) {
+            if ($user->is_super_admin) {
+                return true;
+            }
+            $user->load('role');
+            $role = $user->role;
+            $permission = $role->permissions()->first();
+            if (!$role || !$permission) {
+                return false;
+            }
+            if (is_null($capability) || in_array($capability, $permission->capabilities)) {
+                return true;
+            }
+            return false;
+        });
+
     }
 }

@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\traits\UploadTrait;
 use App\Models\Upload;
-use App\Models\UploadAttachment;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\traits\UploadTrait;
+use App\Models\UploadAttachment;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\RedirectResponse;
+use Termwind\Components\Dd;
 
 class UploadController extends Controller
 {
@@ -97,6 +99,8 @@ class UploadController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
+
         // return $request;
         $upload=Upload::findorfail($request->id);
         $data=[  'title' => $request->title,
@@ -131,7 +135,7 @@ class UploadController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): RedirectResponse
+    public function destroy(string $id)
     {
         //
     }

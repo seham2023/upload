@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\Admin\UploadController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UploadController;
+use App\Http\Controllers\Admin\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +18,28 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('upload.layout.master');
+    return view('welcome');
 });
-Route::resource('upload',UploadController::class,);
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::post('/upload', [UploadController::class, 'store']);
+Route::get('/upload', [UploadController::class, 'index']);
+Route::get('/upload/{id}/edit', [UploadController::class, 'edit'])->name('upload.edit')->middleware('userauth:edit');
+Route::delete('/upload/{id}', [UploadController::class, 'destroy'])->name('upload.destroy')->middleware('userauth:delete');
+
+Route::put('/upload/{id}', [UploadController::class, 'update'])->middleware('userauth:update');
+
+// Route::resource('upload',UploadController::class,);
+Route::resource('users',UserController::class,);
+Route::resource('permissions',PermissionController::class,);
+
+require __DIR__.'/auth.php';
